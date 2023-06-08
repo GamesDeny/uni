@@ -34,13 +34,12 @@ int main() {
     //  0 -> non_blocking producers and consumers
     //  1 -> blocking producers and consumers
     for (int i = 0; i < TEST_CASES; i++) {
+        printf("Testing Consumers: %s Producers: %s Buffer: %s\n", argv[i][1], argv[i][2], argv[i][3]);
         main_with_args(0, sizeof argv, argv[i]);
         printf("END\n");
     }
     free_allocated_memory(4, argv, cases);
     pthread_exit(NULL);
-
-    return 0;
 }
 
 int main_with_args(int blocking_val, int argc, char **argv) {

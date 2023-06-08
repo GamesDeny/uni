@@ -16,19 +16,25 @@ test_case **read_CSV() {
     char *token;
     test_case **data = (test_case **) malloc(TEST_CASES * sizeof(test_case *));
 
+    for (int row = 0; row < TEST_CASES; row++) {
+        data[row] = (test_case *) malloc(sizeof(test_case));
+        data[row]->no_consumers = -1;
+        data[row]->no_producers = -1;
+        data[row]->buffer_size = -1;
+    }
+
     // Open the CSV file for reading
     file = fopen(CSV_PATH, FILE_MODE);
     check(file != NULL, "read_CSV() - Failed to open the file.");
 
     // Read the file line by line
     for (int row = 0; fgets(line, sizeof(line), file) != NULL && row < TEST_CASES; row++) {
-        data[row] = (test_case *) malloc(sizeof(test_case));
         char line_copy[TEST_CASES];
         strcpy(line_copy, line);  // Create a copy of the line
 
         // Tokenize the copied line using the specified delimiter
         token = strtok(line_copy, CSV_DELIM);
-        for (int column = 0; token != NULL && column < NO_OF_COLUMNS; column++) {
+        for (int column = 0; token != NULL && strcmp(token, "\n") > 0 && column < NO_OF_COLUMNS; column++) {
             // Convert token to integer and store in the data structure
             int value = atoi(token);
             switch (column) {
