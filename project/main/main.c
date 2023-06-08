@@ -31,10 +31,11 @@ int main() {
     //  0 -> non_blocking producers and consumers
     //  1 -> blocking producers and consumers
     for (int i = 0; i < TEST_CASES; i++) {
-        printf("Starting with cases: %d %d %d", *argv[i][1], *argv[i][2], *argv[i][3]);
-        main_with_args(1, sizeof argv, argv[i]);
+        main_with_args(0, sizeof argv, argv[i]);
+        printf("END\n");
     }
-    free_allocated_memory(TEST_CASES, argv, cases);
+    free_allocated_memory(4, argv, cases);
+    pthread_exit(NULL);
 
     return 0;
 }
@@ -69,7 +70,7 @@ int main_with_args(int blocking_val, int argc, char **argv) {
     }
 
     buffer_destroy(buffer);
-    pthread_exit(NULL);
+    return 0;
 }
 
 void free_allocated_memory(int argc, char ***argv, test_case **cases) {
@@ -140,7 +141,6 @@ void *non_blocking_consumer(void *arg) {
 
     pthread_exit(NULL);
 }
-
 
 buffer_t *buffer_init(unsigned int maxsize) {
     buffer_t *buffer = (buffer_t *) malloc(sizeof(buffer_t));
@@ -332,16 +332,16 @@ char ***prepare_argv(test_case **cases) {
 
     for (int i = 0; i < TEST_CASES; i++) {
         char **argv = (char **) malloc((4) * sizeof(char *));
-        //argv[0] = strdup(CSV_PATH);
-
-        argv[0] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[0], "%d", cases[i]->no_consumers);
+        argv[0] = strdup(CSV_PATH);
 
         argv[1] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[1], "%d", cases[i]->no_producers);
+        sprintf(argv[1], "%d", cases[i]->no_consumers);
 
         argv[2] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[2], "%d", cases[i]->buffer_size);
+        sprintf(argv[2], "%d", cases[i]->no_producers);
+
+        argv[3] = (char *) malloc(20 * sizeof(char));
+        sprintf(argv[3], "%d", cases[i]->buffer_size);
 
         argv_matrix[i] = argv;
     }
