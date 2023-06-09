@@ -60,23 +60,45 @@ test_case **read_CSV() {
     return data;
 }
 
-char ***prepare_argv(test_case **cases) {
-    char ***argv_matrix = (char ***) malloc(TEST_CASES * sizeof(char **));
+void prepare_argv(test_case **cases, int is_test, char ***argv_matrix) {
+    for (size_t i = 0; i < sizeof cases; i++) {
+        argv_matrix[i] = (char **) malloc(3 * sizeof(char **));
+        for (size_t j = 0; j < sizeof cases[i]; j++) {
+            argv_matrix[i][j] = malloc(1 * sizeof(char *));
+            for (size_t k = 0; k < sizeof cases[i][j]; k++) {
+                argv_matrix[i][j][k] = -1;
+            }
+        }
+    }
 
-    for (int i = 0; i < TEST_CASES; i++) {
+    if (is_test == 1) {
+        for (int i = 0; i < TEST_CASES; i++) {
+            char **argv = (char **) malloc((4) * sizeof(char *));
+            argv[0] = strdup(CSV_PATH);
+
+            argv[1] = (char *) malloc(20 * sizeof(char));
+            sprintf(argv[1], "%d", cases[i]->no_consumers);
+
+            argv[2] = (char *) malloc(20 * sizeof(char));
+            sprintf(argv[2], "%d", cases[i]->no_producers);
+
+            argv[3] = (char *) malloc(20 * sizeof(char));
+            sprintf(argv[3], "%d", cases[i]->buffer_size);
+
+            argv_matrix[i] = argv;
+        }
+    } else {
         char **argv = (char **) malloc((4) * sizeof(char *));
         argv[0] = strdup(CSV_PATH);
 
         argv[1] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[1], "%d", cases[i]->no_consumers);
+        sprintf(argv[1], "%d", 100);
 
         argv[2] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[2], "%d", cases[i]->no_producers);
+        sprintf(argv[2], "%d", 100);
 
         argv[3] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[3], "%d", cases[i]->buffer_size);
-
-        argv_matrix[i] = argv;
+        sprintf(argv[3], "%d", 10);
     }
 
     return argv_matrix;

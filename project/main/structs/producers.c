@@ -15,7 +15,7 @@ void *blocking_producer(void *arg) {
         msg_t *message = msg_init(content);
 
         blocking_put(buffer, message);
-        printf("Produced: %d\n", *(char *) message->content);
+        printf("Produced: %s\n", message->content);
     }
 
     pthread_exit(NULL);
@@ -30,7 +30,7 @@ void *non_blocking_producer(void *arg) {
         msg_t *message = msg_init(content);
 
         non_blocking_put(buffer, message);
-        printf("Produced: %d\n", *(char *) message->content);
+        printf("Produced: %s\n", message->content);
     }
 
     pthread_exit(NULL);

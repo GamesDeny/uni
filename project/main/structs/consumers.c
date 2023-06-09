@@ -12,7 +12,7 @@ void *blocking_consumer(void *arg) {
     for (int i = 0; i < buffer_size; i++) {
         msg_t *message = blocking_get(buffer);
 
-        printf("Consumed: %d\n", *(char *) message->content);
+        printf("Consumed: %s\n", message->content);
         msg_destroy(message);
     }
 
@@ -25,7 +25,7 @@ void *non_blocking_consumer(void *arg) {
     for (int i = 0; i < buffer_size; i++) {
         msg_t *message = non_blocking_get(buffer);
 
-        printf("Consumed: %d\n", *(char *) message->content);
+        printf("Consumed: %s\n", message->content);
         msg_destroy(message);
     }
 

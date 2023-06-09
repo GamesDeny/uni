@@ -45,7 +45,7 @@ msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
         pthread_cond_wait(&(buffer->full), &(buffer->mutex));
     }
 
-    buffer->messages[buffer->get_index] = (msg_t *) msg->msg_copy((struct msg_t *) msg);
+    buffer->messages[buffer->get_index] = (msg_t *) msg->msg_copy(msg);
     buffer->get_index = (buffer->get_index + 1) % buffer->maxsize;
     buffer->count++;
 
@@ -66,7 +66,7 @@ msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
         return BUFFER_ERROR;
     }
 
-    buffer->messages[buffer->get_index] = (msg_t *) msg->msg_copy((struct msg_t *) msg);
+    buffer->messages[buffer->get_index] = (msg_t *) msg->msg_copy(msg);
     buffer->get_index = (buffer->get_index + 1) % buffer->maxsize;
     buffer->count++;
 

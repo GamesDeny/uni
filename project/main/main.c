@@ -14,6 +14,7 @@
 #define DEFAULT_BUFFER_SIZE 1000
 #define DEFAULT_NO_CONSUMERS 5
 #define DEFAULT_NO_PRODUCERS 5
+#define TEST_ARGV "test"
 
 unsigned long no_of_consumers;
 unsigned long no_of_producers;
@@ -23,22 +24,27 @@ int main_with_args(int blocking_val, int argc, char **argv);
 
 void free_allocated_memory(int argc, char ***argv, test_case **cases);
 
-int main() {
+int main(int argc, char **argv) {
+    int is_test = argc > 1 && argv[1] != NULL ? 1 : 0;
+    int test_cases = is_test ? 1 : TEST_CASES;
+
     test_case **cases = read_CSV();
     check(cases != NULL, "main() - No cases found");
 
-    char ***argv = prepare_argv(cases);
+    char ***test_argv = (char ***) malloc(test_cases * sizeof(char **));;
+    prepare_argv(cases, is_test, test_argv);
 
     // Calling parameterized main_with_args
     // blocking_val:
     //  0 -> non_blocking producers and consumers
     //  1 -> blocking producers and consumers
-    for (int i = 0; i < TEST_CASES; i++) {
-        printf("Testing Consumers: %s Producers: %s Buffer: %s\n", argv[i][1], argv[i][2], argv[i][3]);
-        main_with_args(0, sizeof argv, argv[i]);
+    for (int i = 0; i < test_cases; i++) {
+        printf("Testing Consumers: %s Producers: %s Buffer: %s\n", test_argv[i][1], test_argv[i][2], test_argv[i][3]);
+        main_with_args(0, sizeof test_argv, test_argv[i]);
         printf("END\n");
     }
-    free_allocated_memory(4, argv, cases);
+
+    free_allocated_memory(4, test_argv, cases);
     pthread_exit(NULL);
 }
 
