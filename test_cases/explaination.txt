@@ -1,0 +1,10 @@
+Utilizzare un alto numero (sopra 2k) producers and consumers il programma lancerà una SIGABRT sul metodo msg_destroy
+Lanciare più volte di seguito il codice lo manda in un loop
+
+
+La soluzione fa uso di un buffer con indici per la get e la put in modo da evitare il problema di INDEX_OUT_OF_BOUND.
+Le variabili di get/put index e count sono atomic_unsigned_int in quanto i valori possono essere solo maggiori di 0 e
+atomici per permettere le modifiche thread-safe dei valori.
+
+La classe main esegue un ciclo di creazione di thread bloccanti o non (a seconda del parametro "blocking" passato).
+Il codice utilizzerà

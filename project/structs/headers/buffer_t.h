@@ -9,12 +9,14 @@
 
 #define BUFFER_ERROR (msg_t*) NULL
 
+#include <stdatomic.h>
+
 typedef struct {
     msg_t **messages;
-    int get_index;
-    int put_index;
-    int count;
-    int maxsize;
+    atomic_uint get_index;
+    atomic_uint put_index;
+    atomic_uint count;
+    unsigned int maxsize;
     pthread_mutex_t mutex;
     pthread_cond_t full;
     pthread_cond_t empty;

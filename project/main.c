@@ -11,20 +11,20 @@
 #include "structs/buffer_t.c"
 #include "structs/msg_t.c"
 
-#define DEFAULT_BUFFER_SIZE 1000
-#define DEFAULT_NO_CONSUMERS 5
-#define DEFAULT_NO_PRODUCERS 5
+#define DEFAULT_BUFFER_SIZE 10
+#define DEFAULT_NO_CONSUMERS 100
+#define DEFAULT_NO_PRODUCERS 100
 #define TEST_ARGV "test"
 
 unsigned long no_of_consumers;
 unsigned long no_of_producers;
 int blocking;
 
-int main_with_args(int blocking_val, int argc, char **argv);
-
 void free_allocated_memory(int argc, char ***argv, test_case **cases);
 
-int main(int argc, char **argv) {
+int main();
+
+int main_with_args(int argc, char **argv) {
     int is_test = argc > 1 && argv[1] != NULL ? 0 : 1;
     int test_cases = is_test ? 1 : TEST_CASES;
 
@@ -32,29 +32,31 @@ int main(int argc, char **argv) {
     check(cases != NULL, "main() - No cases found");
 
     char ***test_argv = (char ***) malloc(test_cases * sizeof(char **));;
+    for (size_t i = 0; i < sizeof cases; i++) {
+        test_argv[i] = (char **) malloc(sizeof(cases) * sizeof(char **));
+        for (size_t j = 0; j < sizeof(cases[i]); j++) {
+            test_argv[i][j] = "-1";
+        }
+    }
     prepare_argv(cases, is_test, test_argv);
+    blocking = 1;
 
     // Calling parameterized main_with_args
     // blocking_val:
     //  0 -> non_blocking producers and consumers
     //  1 -> blocking producers and consumers
     for (int i = 0; i < test_cases; i++) {
-        main_with_args(0, sizeof test_argv, test_argv[i]);
+        no_of_consumers = (argv[1] != NULL) ? strtoul(argv[1], NULL, 10) : DEFAULT_NO_CONSUMERS;
+        no_of_producers = (argv[2] != NULL) ? strtoul(argv[2], NULL, 10) : DEFAULT_NO_PRODUCERS;
+        buffer_size = (argv[3] != NULL) ? strtoul(argv[3], NULL, 10) : DEFAULT_BUFFER_SIZE;
+        main();
     }
 
     free_allocated_memory(4, test_argv, cases);
     return 1;
 }
 
-int main_with_args(int blocking_val, int argc, char **argv) {
-    blocking = blocking_val > 0 ? 1 : 0;
-
-    check(argc >= 0, "main() - Error with arg count, expected positive...");
-
-    no_of_consumers = (argv[1] != NULL) ? strtoul(argv[1], NULL, 10) : DEFAULT_NO_CONSUMERS;
-    no_of_producers = (argv[2] != NULL) ? strtoul(argv[2], NULL, 10) : DEFAULT_NO_PRODUCERS;
-    buffer_size = (argv[3] != NULL) ? strtoul(argv[3], NULL, 10) : DEFAULT_BUFFER_SIZE;
-
+int main() {
     buffer_t *buffer = buffer_init(buffer_size);
     check(buffer != NULL, "main() - Error buffer null found");
 

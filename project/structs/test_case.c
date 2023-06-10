@@ -61,13 +61,6 @@ test_case **read_CSV() {
 }
 
 void prepare_argv(test_case **cases, int is_test, char ***argv_matrix) {
-    for (size_t i = 0; i < sizeof cases; i++) {
-        argv_matrix[i] = (char **) malloc(sizeof(cases) * sizeof(char **));
-        for (size_t j = 0; j < sizeof(cases[i]); j++) {
-            argv_matrix[i][j] = "-1";
-        }
-    }
-
     if (is_test == 1) {
         for (int i = 0; i < TEST_CASES; i++) {
             char **argv = (char **) malloc((4) * sizeof(char *));
