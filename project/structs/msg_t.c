@@ -10,7 +10,7 @@
 
 /**/
 msg_t *msg_init(void *content) {
-    check(content != NULL, "msg_init() - Null content found...");
+    check(content != NULL, "msg_init() - Null content found...\n");
 
     msg_t *new_msg = (msg_t *) malloc(sizeof(msg_t));
     char *string = (char *) content;
@@ -32,7 +32,7 @@ void msg_destroy(msg_t *msg) {
 }
 
 msg_t *msg_copy(msg_t *msg) {
-    check(msg != NULL, "msg_copy() - Null msg found...");
+    check(msg != NULL, "msg_copy() - Null msg found...\n");
 
     msg_t *new_msg = (msg_t *) malloc(sizeof(msg_t));
 

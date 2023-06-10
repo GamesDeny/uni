@@ -10,10 +10,10 @@
 buffer_t *buffer_init(unsigned int maxsize) {
     buffer_t *buffer = (buffer_t *) malloc(sizeof(buffer_t));
 
-    buffer->messages = (msg_t **) malloc(maxsize * sizeof(msg_t *));
-    buffer->get_index = 0;
-    buffer->put_index = 0;
-    buffer->count = 0;
+    buffer->messages = (msg_t **) malloc(maxsize * sizeof(msg_t * ));
+    atomic_store(&buffer->get_index, 0);
+    atomic_store(&buffer->put_index, 0);
+    atomic_store(&buffer->count, 0);
     buffer->maxsize = maxsize;
 
     pthread_mutex_init(&(buffer->mutex), NULL);
@@ -24,8 +24,12 @@ buffer_t *buffer_init(unsigned int maxsize) {
 }
 
 void buffer_destroy(buffer_t *buffer) {
-    check(buffer != NULL, "buffer_destroy() - Null buffer found...");
+    check(buffer != NULL, "buffer_destroy() - Null buffer found...\n");
 
+    for (int i = 0; i < buffer->count; i++) {
+        printf("buffer_destroy() - Messages is not empty so freeing msg: %d\n", i);
+        free(buffer->messages[i]);
+    }
     free(buffer->messages);
 
     pthread_mutex_destroy(&(buffer->mutex));
@@ -37,8 +41,8 @@ void buffer_destroy(buffer_t *buffer) {
 }
 
 msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
-    check(buffer != NULL, "blocking_put() - Null buffer found...");
-    check(msg != NULL, "blocking_put() - Null msg found...");
+    check(buffer != NULL, "blocking_put() - Null buffer found...\n");
+    check(msg != NULL, "blocking_put() - Null msg found...\n");
 
     pthread_mutex_lock(&(buffer->mutex));
     while (buffer->count == buffer->maxsize) {
@@ -47,7 +51,7 @@ msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
 
     buffer->messages[buffer->get_index] = (msg_t *) msg->msg_copy((struct msg_t *) msg);
     buffer->get_index = (buffer->get_index + 1) % buffer->maxsize;
-    buffer->count++;
+    atomic_fetch_add(&buffer->count, 1);
 
     pthread_cond_signal(&(buffer->empty));
     pthread_mutex_unlock(&(buffer->mutex));
@@ -57,8 +61,8 @@ msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
 }
 
 msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
-    check(buffer != NULL, "non_blocking_put() - Null buffer found...");
-    check(msg != NULL, "non_blocking_put() - Null msg found...");
+    check(buffer != NULL, "non_blocking_put() - Null buffer found...\n");
+    check(msg != NULL, "non_blocking_put() - Null msg found...\n");
 
     pthread_mutex_lock(&(buffer->mutex));
     if (buffer->count == buffer->maxsize || buffer->messages == NULL || buffer->messages[buffer->put_index] == NULL) {
@@ -67,8 +71,8 @@ msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
     }
 
     buffer->messages[buffer->get_index] = (msg_t *) msg->msg_copy((struct msg_t *) msg);
-    buffer->get_index = (buffer->get_index + 1) % buffer->maxsize;
-    buffer->count++;
+    buffer->get_index = atomic_fetch_add(&buffer->get_index, 1) % buffer->maxsize;
+    atomic_fetch_add(&buffer->count, 1);
 
     pthread_cond_signal(&(buffer->empty));
     pthread_mutex_unlock(&(buffer->mutex));
@@ -77,7 +81,7 @@ msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
 }
 
 msg_t *blocking_get(buffer_t *buffer) {
-    check(buffer != NULL, "non_blocking_put() - Null buffer found...");
+    check(buffer != NULL, "non_blocking_put() - Null buffer found...\n");
 
     pthread_mutex_lock(&(buffer->mutex));
     while (buffer->count == 0) {
@@ -85,13 +89,13 @@ msg_t *blocking_get(buffer_t *buffer) {
     }
 
     if (buffer->messages == NULL || buffer->messages[buffer->put_index] == NULL) {
-        printf("Null message at index: %d\n", buffer->put_index);
+        printf("Null message at index: %lu\n", buffer->put_index);
         return BUFFER_ERROR;
     }
 
     msg_t *msg = buffer->messages[buffer->put_index];
-    buffer->put_index = (buffer->put_index + 1) % buffer->maxsize;
-    buffer->count--;
+    buffer->put_index = atomic_fetch_add(&buffer->put_index, 1) % atomic_load(&buffer->maxsize);
+    atomic_fetch_sub(&buffer->count, 1);
 
     pthread_cond_signal(&(buffer->full));
     pthread_mutex_unlock(&(buffer->mutex));
@@ -100,7 +104,7 @@ msg_t *blocking_get(buffer_t *buffer) {
 }
 
 msg_t *non_blocking_get(buffer_t *buffer) {
-    check(buffer != NULL, "non_blocking_put() - Null buffer found...");
+    check(buffer != NULL, "non_blocking_put() - Null buffer found...\n");
 
     pthread_mutex_lock(&(buffer->mutex));
     if (buffer->count == 0 || buffer->messages == NULL || buffer->messages[buffer->put_index] == NULL) {
@@ -109,8 +113,8 @@ msg_t *non_blocking_get(buffer_t *buffer) {
     }
 
     msg_t *msg = buffer->messages[buffer->put_index];
-    buffer->put_index = (buffer->put_index + 1) % buffer->maxsize;
-    buffer->count--;
+    buffer->put_index = atomic_fetch_add(&buffer->put_index, 1) % atomic_load(&buffer->maxsize);
+    atomic_fetch_sub(&buffer->count, 1);
 
     pthread_cond_signal(&(buffer->full));
     pthread_mutex_unlock(&(buffer->mutex));

@@ -17,7 +17,7 @@ typedef struct {
     int buffer_size;
 } test_case;
 
-void prepare_argv(test_case **cases, int is_test, char ***argv_matrix);
+void prepare_argv(test_case **cases, char ***argv_matrix);
 
 test_case **read_CSV();
 

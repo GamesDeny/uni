@@ -12,8 +12,8 @@ void *blocking_consumer(void *arg) {
     for (int i = 0; i < buffer_size; i++) {
         msg_t *message = blocking_get(buffer);
 
-        check(message != NULL, "message null");
-        printf("Consumed: %d\n", buffer->get_index);
+        check(message != NULL, "message null\n");
+        printf("Consumed: %lu\n", buffer->get_index);
         msg_destroy(message);
     }
 

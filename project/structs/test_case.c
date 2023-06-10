@@ -14,7 +14,7 @@ test_case **read_CSV() {
     FILE *file;
     char line[TEST_CASES];
     char *token;
-    test_case **data = (test_case **) malloc(TEST_CASES * sizeof(test_case *));
+    test_case **data = (test_case **) malloc(TEST_CASES * sizeof(test_case * ));
 
     for (int row = 0; row < TEST_CASES; row++) {
         data[row] = (test_case *) malloc(sizeof(test_case));
@@ -25,7 +25,7 @@ test_case **read_CSV() {
 
     // Open the CSV file for reading
     file = fopen(CSV_PATH, FILE_MODE);
-    check(file != NULL, "read_CSV() - Failed to open the file.");
+    check(file != NULL, "read_CSV() - Failed to open the file.\n");
 
     // Read the file line by line
     for (int row = 0; fgets(line, sizeof(line), file) != NULL && row < TEST_CASES; row++) {
@@ -48,7 +48,7 @@ test_case **read_CSV() {
                     data[row]->buffer_size = value;
                     break;
                 default:
-                    printf("readCSV() - Error with column:%d", column);
+                    printf("readCSV() - Error with column:%d\n", column);
                     exit(-1);
             }
             token = strtok(NULL, CSV_DELIM);
@@ -60,36 +60,20 @@ test_case **read_CSV() {
     return data;
 }
 
-void prepare_argv(test_case **cases, int is_test, char ***argv_matrix) {
-    if (is_test == 1) {
-        for (int i = 0; i < TEST_CASES; i++) {
-            char **argv = (char **) malloc((4) * sizeof(char *));
-            argv[0] = strdup(CSV_PATH);
-
-            argv[1] = (char *) malloc(20 * sizeof(char));
-            sprintf(argv[1], "%d", cases[i]->no_consumers);
-
-            argv[2] = (char *) malloc(20 * sizeof(char));
-            sprintf(argv[2], "%d", cases[i]->no_producers);
-
-            argv[3] = (char *) malloc(20 * sizeof(char));
-            sprintf(argv[3], "%d", cases[i]->buffer_size);
-
-            argv_matrix[i] = argv;
-        }
-    } else {
+void prepare_argv(test_case **cases, char ***argv_matrix) {
+    for (int i = 0; i < TEST_CASES; i++) {
         char **argv = (char **) malloc((4) * sizeof(char *));
         argv[0] = strdup(CSV_PATH);
 
         argv[1] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[1], "%d", 100);
+        sprintf(argv[1], "%d", cases[i]->no_consumers);
 
         argv[2] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[2], "%d", 100);
+        sprintf(argv[2], "%d", cases[i]->no_producers);
 
         argv[3] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[3], "%d", 10);
+        sprintf(argv[3], "%d", cases[i]->buffer_size);
 
-        argv_matrix[0] = argv;
+        argv_matrix[i] = argv;
     }
 }

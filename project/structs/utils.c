@@ -9,7 +9,7 @@
 void check(int condition, char *err_message) {
     if (!condition) {
         if (strcmp(err_message, "") <= 0) {
-            err_message = "Error... exiting program.";
+            err_message = "Error... exiting program.\n";
         }
 
         printf("%s\n", err_message);

@@ -13,9 +13,9 @@
 
 typedef struct {
     msg_t **messages;
-    atomic_uint get_index;
-    atomic_uint put_index;
-    atomic_uint count;
+    atomic_ulong get_index;
+    atomic_ulong put_index;
+    atomic_ulong count;
     unsigned int maxsize;
     pthread_mutex_t mutex;
     pthread_cond_t full;
