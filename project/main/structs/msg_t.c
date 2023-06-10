@@ -3,7 +3,7 @@
 //
 
 
-#include "msg_t.h"
+#include "headers/msg_t.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -26,9 +26,9 @@ msg_t *msg_init(void *content) {
 }
 
 void msg_destroy(msg_t *msg) {
-    check(msg != NULL, "msg_destroy() - Null msg found...");
-
-    free(msg);
+    if (msg != NULL) {
+        free(msg);
+    }
 }
 
 msg_t *msg_copy(msg_t *msg) {

@@ -2,7 +2,7 @@
 // Created by francesco_pio_montrano on 08/06/23.
 //
 
-#include "test_case.h"
+#include "headers/test_case.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -62,12 +62,9 @@ test_case **read_CSV() {
 
 void prepare_argv(test_case **cases, int is_test, char ***argv_matrix) {
     for (size_t i = 0; i < sizeof cases; i++) {
-        argv_matrix[i] = (char **) malloc(3 * sizeof(char **));
-        for (size_t j = 0; j < sizeof cases[i]; j++) {
-            argv_matrix[i][j] = malloc(1 * sizeof(char *));
-            for (size_t k = 0; k < sizeof cases[i][j]; k++) {
-                argv_matrix[i][j][k] = -1;
-            }
+        argv_matrix[i] = (char **) malloc(sizeof(cases) * sizeof(char **));
+        for (size_t j = 0; j < sizeof(cases[i]); j++) {
+            argv_matrix[i][j] = "-1";
         }
     }
 
@@ -99,7 +96,7 @@ void prepare_argv(test_case **cases, int is_test, char ***argv_matrix) {
 
         argv[3] = (char *) malloc(20 * sizeof(char));
         sprintf(argv[3], "%d", 10);
-    }
 
-    return argv_matrix;
+        argv_matrix[0] = argv;
+    }
 }

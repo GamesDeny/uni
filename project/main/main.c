@@ -2,7 +2,7 @@
 // Created by francesco_pio_montrano on 08/06/23.
 //
 
-#include "structs/buffer_t.h"
+#include "structs/headers/buffer_t.h"
 
 #include "structs/utils.c"
 #include "structs/consumers.c"
@@ -25,7 +25,7 @@ int main_with_args(int blocking_val, int argc, char **argv);
 void free_allocated_memory(int argc, char ***argv, test_case **cases);
 
 int main(int argc, char **argv) {
-    int is_test = argc > 1 && argv[1] != NULL ? 1 : 0;
+    int is_test = argc > 1 && argv[1] != NULL ? 0 : 1;
     int test_cases = is_test ? 1 : TEST_CASES;
 
     test_case **cases = read_CSV();
@@ -39,13 +39,11 @@ int main(int argc, char **argv) {
     //  0 -> non_blocking producers and consumers
     //  1 -> blocking producers and consumers
     for (int i = 0; i < test_cases; i++) {
-        printf("Testing Consumers: %s Producers: %s Buffer: %s\n", test_argv[i][1], test_argv[i][2], test_argv[i][3]);
         main_with_args(0, sizeof test_argv, test_argv[i]);
-        printf("END\n");
     }
 
     free_allocated_memory(4, test_argv, cases);
-    pthread_exit(NULL);
+    return 1;
 }
 
 int main_with_args(int blocking_val, int argc, char **argv) {

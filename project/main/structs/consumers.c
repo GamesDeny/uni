@@ -2,7 +2,7 @@
 // Created by francesco_pio_montrano on 08/06/23.
 //
 
-#include "consumers.h"
+#include "headers/consumers.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -12,7 +12,8 @@ void *blocking_consumer(void *arg) {
     for (int i = 0; i < buffer_size; i++) {
         msg_t *message = blocking_get(buffer);
 
-        printf("Consumed: %s\n", message->content);
+        check(message != NULL, "message null");
+        printf("Consumed: %d\n", buffer->get_index);
         msg_destroy(message);
     }
 
@@ -22,7 +23,7 @@ void *blocking_consumer(void *arg) {
 void *non_blocking_consumer(void *arg) {
     buffer_t *buffer = (buffer_t *) arg;
 
-    for (int i = 0; i < buffer_size; i++) {
+    for (int i = 0; i < buffer->count; i++) {
         msg_t *message = non_blocking_get(buffer);
 
         printf("Consumed: %s\n", message->content);

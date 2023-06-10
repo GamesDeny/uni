@@ -2,7 +2,7 @@
 // Created by francesco_pio_montrano on 08/06/23.
 //
 
-#include "buffer_t.h"
+#include "headers/buffer_t.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,7 +45,7 @@ msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
         pthread_cond_wait(&(buffer->full), &(buffer->mutex));
     }
 
-    buffer->messages[buffer->get_index] = (msg_t *) msg->msg_copy(msg);
+    buffer->messages[buffer->get_index] = (msg_t *) msg->msg_copy((struct msg_t *) msg);
     buffer->get_index = (buffer->get_index + 1) % buffer->maxsize;
     buffer->count++;
 
@@ -61,7 +61,7 @@ msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
     check(msg != NULL, "non_blocking_put() - Null msg found...");
 
     pthread_mutex_lock(&(buffer->mutex));
-    if (buffer->count == buffer->maxsize) {
+    if (buffer->count == buffer->maxsize || buffer->messages == NULL || buffer->messages[buffer->put_index] == NULL) {
         pthread_mutex_unlock(&(buffer->mutex));
         return BUFFER_ERROR;
     }
@@ -84,6 +84,11 @@ msg_t *blocking_get(buffer_t *buffer) {
         pthread_cond_wait(&(buffer->empty), &(buffer->mutex));
     }
 
+    if (buffer->messages == NULL || buffer->messages[buffer->put_index] == NULL) {
+        printf("Null message at index: %d\n", buffer->put_index);
+        return BUFFER_ERROR;
+    }
+
     msg_t *msg = buffer->messages[buffer->put_index];
     buffer->put_index = (buffer->put_index + 1) % buffer->maxsize;
     buffer->count--;
@@ -98,7 +103,7 @@ msg_t *non_blocking_get(buffer_t *buffer) {
     check(buffer != NULL, "non_blocking_put() - Null buffer found...");
 
     pthread_mutex_lock(&(buffer->mutex));
-    if (buffer->count == 0) {
+    if (buffer->count == 0 || buffer->messages == NULL || buffer->messages[buffer->put_index] == NULL) {
         pthread_mutex_unlock(&(buffer->mutex));
         return BUFFER_ERROR;
     }
