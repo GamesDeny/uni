@@ -2,7 +2,7 @@
 // Created by francesco_pio_montrano on 08/06/23.
 //
 
-#include "headers/test_case.h"
+#include "../headers/test_case.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -2,14 +2,14 @@
 // Created by francesco_pio_montrano on 08/06/23.
 //
 
-#include "structs/headers/buffer_t.h"
+#include "headers/buffer_t.h"
 
-#include "structs/utils.c"
-#include "structs/consumers.c"
-#include "structs/producers.c"
-#include "structs/test_case.c"
-#include "structs/buffer_t.c"
-#include "structs/msg_t.c"
+#include "implementation/utils.c"
+#include "implementation/consumers.c"
+#include "implementation/producers.c"
+#include "implementation/test_case.c"
+#include "implementation/buffer_t.c"
+#include "implementation/msg_t.c"
 
 #define DEFAULT_BUFFER_SIZE 10
 #define DEFAULT_NO_CONSUMERS 100
