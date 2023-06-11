@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+msg_t *generate_put_msg(buffer_t *buffer, const msg_t *msg);
+
+msg_t *generate_get_msg(buffer_t *buffer, long buffer_index);
+
 buffer_t *buffer_init(unsigned long maxsize) {
     buffer_t *buffer = (buffer_t *) malloc(sizeof(buffer_t));
 
@@ -50,15 +54,8 @@ msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
         pthread_cond_wait(&(buffer->full), &(buffer->mutex));
     }
 
-    buffer->messages[buffer->count] = (msg_t *) msg->msg_copy((struct msg_t *) msg);
-    buffer->count = atomic_fetch_add(&buffer->count, 1) % buffer->maxsize;
-    printf("blocking_put() - Buffer count: %lu\n", buffer->count);
 
-    pthread_cond_signal(&(buffer->empty));
-    pthread_mutex_unlock(&(buffer->mutex));
-    check(msg != BUFFER_ERROR, "blocking_put() - Returning NULL msg\n");
-
-    return msg;
+    return generate_put_msg(buffer, msg);
 }
 
 msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
@@ -71,15 +68,7 @@ msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
         return BUFFER_ERROR;
     }
 
-    buffer->messages[buffer->count] = (msg_t *) msg->msg_copy((struct msg_t *) msg);
-    buffer->count = atomic_fetch_add(&buffer->count, 1) % buffer->maxsize;
-    printf("non_blocking_put() - Buffer count: %lu\n", buffer->count);
-
-    pthread_cond_signal(&(buffer->empty));
-    pthread_mutex_unlock(&(buffer->mutex));
-    check(msg != BUFFER_ERROR, "non_blocking_put() - Returning NULL msg\n");
-
-    return msg;
+    return generate_put_msg(buffer, msg);
 }
 
 msg_t *blocking_get(buffer_t *buffer) {
@@ -96,15 +85,7 @@ msg_t *blocking_get(buffer_t *buffer) {
         return BUFFER_ERROR;
     }
 
-    msg_t *msg = buffer->messages[buffer_index];
-    atomic_fetch_sub(&(buffer->count), 1);
-    printf("blocking_put() - Buffer count: %lu\n", buffer_index);
-
-    pthread_cond_signal(&(buffer->full));
-    pthread_mutex_unlock(&(buffer->mutex));
-    check(msg != BUFFER_ERROR, "non_blocking_get() - NULL msg");
-
-    return msg;
+    return generate_get_msg(buffer, buffer_index);
 }
 
 msg_t *non_blocking_get(buffer_t *buffer) {
@@ -117,13 +98,29 @@ msg_t *non_blocking_get(buffer_t *buffer) {
         return BUFFER_ERROR;
     }
 
+    return generate_get_msg(buffer, buffer_index);
+}
+
+msg_t *generate_get_msg(buffer_t *buffer, long buffer_index) {
     msg_t *msg = buffer->messages[buffer_index];
-    atomic_fetch_sub(&(buffer_index), 1);
-    printf("non_blocking_put() - Buffer count: %lu\n", buffer_index);
+    atomic_fetch_sub(&(buffer->count), 1);
+    printf("get() - Buffer count: %lu\n", buffer_index);
 
     pthread_cond_signal(&(buffer->full));
     pthread_mutex_unlock(&(buffer->mutex));
-    check(msg != BUFFER_ERROR, "non_blocking_get() - NULL msg");
+    check(msg != BUFFER_ERROR, "get() - NULL msg");
+
+    return msg;
+}
+
+msg_t *generate_put_msg(buffer_t *buffer, const msg_t *msg) {
+    buffer->messages[buffer->count] = (msg_t *) msg->msg_copy((struct msg_t *) msg);
+    buffer->count = atomic_fetch_add(&buffer->count, 1) % buffer->maxsize;
+    printf("put() - Buffer count: %lu\n", buffer->count);
+
+    pthread_cond_signal(&(buffer->empty));
+    pthread_mutex_unlock(&(buffer->mutex));
+    check(msg != BUFFER_ERROR, "put() - Returning NULL msg\n");
 
     return msg;
 }

@@ -15,7 +15,7 @@ void *blocking_producer(void *arg) {
 
     msg = blocking_put(buffer, msg);
     printf("Produced: %s\n", msg->content);
-    printf("main() - buffer_count: %lu\n", buffer->count);
+    printf("blocking_producer() - buffer_count: %lu\n", buffer->count);
 
     pthread_exit(NULL);
 }
@@ -32,7 +32,7 @@ void *non_blocking_producer(void *arg) {
     check(msg != BUFFER_ERROR, "non_blocking_producer() - NULL msg put\n");
 
     printf("Produced: %s\n", msg->content);
-    printf("main() - buffer_count: %lu\n", buffer->count);
+    printf("non_blocking_producer() - buffer_count: %lu\n", buffer->count);
 
     //pthread_exit(NULL);
 }
