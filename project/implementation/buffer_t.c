@@ -22,13 +22,15 @@ buffer_t *buffer_init(unsigned long maxsize) {
 void buffer_destroy(buffer_t *buffer) {
     check(buffer != NULL, "buffer_destroy() - Null buffer found\n");
 
-    for (int i = 0; i < buffer->maxsize; i++) {
-        //printf("buffer_destroy() - Messages is not empty so freeing msg: %d\n", i);
-        free(buffer->messages[i]);
-        buffer->messages[i] = NULL;
+    if (buffer->messages != NULL) {
+        for (int i = 0; i < buffer->maxsize && buffer->messages[i] != BUFFER_ERROR; i++) {
+            //printf("buffer_destroy() - Messages is not empty so freeing msg: %d\n", i);
+            free(buffer->messages[i]);
+            buffer->messages[i] = NULL;
+        }
+        free(buffer->messages);
+        buffer->messages = NULL;
     }
-    free(buffer->messages);
-    buffer->messages = NULL;
 
     pthread_mutex_destroy(&(buffer->mutex));
 
