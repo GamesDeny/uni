@@ -2,5 +2,9 @@ La soluzione fa uso di un buffer con indici per la get e la put in modo da evita
 Le variabili di get/put index e count sono atomic_unsigned_int in quanto i valori possono essere solo maggiori di 0 e
 atomici per permettere le modifiche thread-safe dei valori.
 
-La classe main esegue un ciclo di creazione di thread bloccanti o non (a seconda del parametro "blocking" passato).
-Il codice utilizzerà
+La classe main esegue un ciclo di creazione di thread bloccanti o non (a seconda del parametro "blocking").
+Il codice provvederà a creare un buffer di dimensione fissata e in base al numero di producer e consumer:
+    crea un thread
+    lo avvia
+
+Alla fine del ciclo il buffer viene eliminato, liberata la memoria e il programma chiuso
