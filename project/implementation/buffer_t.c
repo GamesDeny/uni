@@ -38,7 +38,7 @@ void buffer_destroy(buffer_t *buffer) {
 
 msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
     check(buffer != NULL, "blocking_put() - Null buffer found\n");
-    check(msg != NULL && msg != BUFFER_ERROR, "blocking_put() - Null msg found\n");
+    check(msg != BUFFER_ERROR, "blocking_put() - Null msg found\n");
 
     pthread_mutex_lock(&(buffer->mutex));
     while (buffer->count == buffer->maxsize) {
@@ -51,14 +51,14 @@ msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
 
     pthread_cond_signal(&(buffer->empty));
     pthread_mutex_unlock(&(buffer->mutex));
-    check(msg != NULL && msg != BUFFER_ERROR, "blocking_put() - Returning NULL msg\n");
+    check(msg != BUFFER_ERROR, "blocking_put() - Returning NULL msg\n");
 
     return msg;
 }
 
 msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
     check(buffer != NULL, "non_blocking_put() - Null buffer found\n");
-    check(msg != NULL && msg != BUFFER_ERROR, "non_blocking_put() - Null msg found\n");
+    check(msg != BUFFER_ERROR, "non_blocking_put() - Null msg found\n");
 
     pthread_mutex_lock(&(buffer->mutex));
     if (buffer->count == buffer->maxsize) {
@@ -72,7 +72,7 @@ msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
 
     pthread_cond_signal(&(buffer->empty));
     pthread_mutex_unlock(&(buffer->mutex));
-    check(msg != NULL && msg != BUFFER_ERROR, "non_blocking_put() - Returning NULL msg\n");
+    check(msg != BUFFER_ERROR, "non_blocking_put() - Returning NULL msg\n");
 
     return msg;
 }
@@ -81,11 +81,11 @@ msg_t *blocking_get(buffer_t *buffer) {
     check(buffer != NULL, "blocking_get() - Null buffer found\n");
 
     pthread_mutex_lock(&(buffer->mutex));
-    while (buffer->count == -1) {
+    while (buffer->count == 0) {
         pthread_cond_wait(&(buffer->empty), &(buffer->mutex));
     }
 
-    long buffer_index = buffer->count + 1;
+    long buffer_index = buffer->count - 1;
     if (buffer->messages == NULL || buffer->messages[buffer_index] == NULL) {
         printf("Null message at index: %lu\n", buffer_index);
         return BUFFER_ERROR;
@@ -97,7 +97,7 @@ msg_t *blocking_get(buffer_t *buffer) {
 
     pthread_cond_signal(&(buffer->full));
     pthread_mutex_unlock(&(buffer->mutex));
-    check(msg != NULL && msg != BUFFER_ERROR, "non_blocking_get() - NULL msg");
+    check(msg != BUFFER_ERROR, "non_blocking_get() - NULL msg");
 
     return msg;
 }
@@ -105,9 +105,9 @@ msg_t *blocking_get(buffer_t *buffer) {
 msg_t *non_blocking_get(buffer_t *buffer) {
     check(buffer != NULL, "non_blocking_get() - Null buffer found\n");
 
-    long buffer_index = buffer->count + 1;
+    long buffer_index = buffer->count - 1;
     pthread_mutex_lock(&(buffer->mutex));
-    if (buffer->count == -1 || buffer->messages[buffer_index] == NULL) {
+    if (buffer->count == 0 || buffer->messages[buffer_index] == NULL) {
         pthread_mutex_unlock(&(buffer->mutex));
         return BUFFER_ERROR;
     }
@@ -118,7 +118,7 @@ msg_t *non_blocking_get(buffer_t *buffer) {
 
     pthread_cond_signal(&(buffer->full));
     pthread_mutex_unlock(&(buffer->mutex));
-    check(msg != NULL && msg != BUFFER_ERROR, "non_blocking_get() - NULL msg");
+    check(msg != BUFFER_ERROR, "non_blocking_get() - NULL msg");
 
     return msg;
 }

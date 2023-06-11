@@ -26,10 +26,10 @@ void *non_blocking_producer(void *arg) {
     void *content = malloc(sizeof(char *));
     snprintf(content, sizeof(content), "%d", rand());
     msg_t *msg = msg_init(content);
-    check(msg != NULL && msg != BUFFER_ERROR, "non_blocking_producer() - NULL msg created\n");
+    check(msg != BUFFER_ERROR, "non_blocking_producer() - NULL msg created\n");
 
     msg = non_blocking_put(buffer, msg);
-    check(msg != NULL && msg != BUFFER_ERROR, "non_blocking_producer() - NULL msg put\n");
+    check(msg != BUFFER_ERROR, "non_blocking_producer() - NULL msg put\n");
 
     printf("Produced: %s\n", msg->content);
     printf("main() - buffer_count: %lu\n", buffer->count);

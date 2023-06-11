@@ -1,2 +1,0 @@
-La soluzione proposta fa uso dei mutex per controllare e bloccare l'accesso al buffer e gestire la sincronizzazione dei thread.
-La classe main genera un numero

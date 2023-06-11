@@ -27,7 +27,7 @@ int main_with_args(int argc, char **argv);
 
 int main() {
     int test = 0;
-    blocking = 0;
+    blocking = 1;
 
     if (test) {
         main_with_args(1, (char **) NULL);

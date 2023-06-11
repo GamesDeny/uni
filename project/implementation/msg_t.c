@@ -30,7 +30,7 @@ msg_t *msg_init(void *content) {
 }
 
 void msg_destroy(msg_t *msg) {
-    if (msg != NULL && msg != BUFFER_ERROR) {
+    if (msg != BUFFER_ERROR) {
         if (msg->content != NULL) {
             free(msg->content); // free copia privata
         }
@@ -39,7 +39,7 @@ void msg_destroy(msg_t *msg) {
 }
 
 msg_t *msg_copy(msg_t *msg) {
-    check(msg != NULL && msg != BUFFER_ERROR, "msg_copy() - Null msg found\n");
+    check(msg != BUFFER_ERROR, "msg_copy() - Null msg found\n");
 
     return (msg_t *) msg->msg_init(msg->content);
 }
