@@ -5,12 +5,12 @@
 #include <CUnit/Basic.h>
 #include <CUnit/CUnit.h>
 
-#include "headers/buffer_t.h"
-#include "implementation/buffer_t.c"
-#include "implementation/utils.c"
-#include "implementation/msg_t.c"
-#include "implementation/producers.c"
-#include "implementation/consumers.c"
+#include "project/headers/buffer_t.h"
+#include "project/implementation/utils.c"
+#include "project/implementation/buffer_t.c"
+#include "project/implementation/msg_t.c"
+#include "project/implementation/producers.c"
+#include "project/implementation/consumers.c"
 
 void test_buffer_init();
 
