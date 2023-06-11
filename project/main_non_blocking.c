@@ -1,8 +1,17 @@
 //
 // Created by francesco_pio_montrano on 08/06/23.
 //
+#include "headers/buffer_t.h"
 
-#include "common_main.c"
+#include "implementation/utils.c"
+#include "implementation/buffer_t.c"
+#include "implementation/msg_t.c"
+#include "implementation/consumers.c"
+#include "implementation/producers.c"
+
+#define DEFAULT_BUFFER_SIZE 10
+#define DEFAULT_NO_CONSUMERS 100
+#define DEFAULT_NO_PRODUCERS 100
 
 int main() {
     buffer_t *buffer = buffer_init(DEFAULT_BUFFER_SIZE);
