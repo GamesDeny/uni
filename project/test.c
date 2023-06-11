@@ -5,7 +5,7 @@
 #include <CUnit/Basic.h>
 #include <CUnit/CUnit.h>
 
-#include "headers//buffer_t.h"
+#include "headers/buffer_t.h"
 #include "implementation/buffer_t.c"
 #include "implementation/utils.c"
 #include "implementation/msg_t.c"
