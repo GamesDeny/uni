@@ -34,5 +34,5 @@ void *non_blocking_producer(void *arg) {
     printf("Produced: %s\n", msg->content);
     printf("non_blocking_producer() - buffer_count: %lu\n", buffer->count);
 
-    //pthread_exit(NULL);
+    pthread_exit(NULL);
 }
