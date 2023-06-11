@@ -1,4 +1,4 @@
-La soluzione fa uso di un buffer con indici per la get e la put in modo da evitare il problema di 'INDEX_OUT_OF_BOUND'.
+La soluzione fa uso di un buffer con indici.
 Le variabili di get/put index e count sono atomic_unsigned_int in quanto i valori possono essere solo maggiori di 0 e
 atomici per permettere le modifiche thread-safe dei valori.
 
@@ -6,5 +6,21 @@ La classe main esegue un ciclo di creazione di thread bloccanti o non (a seconda
 Il codice provvederà a creare un buffer di dimensione fissata e in base al numero di producer e consumer:
     crea un thread
     lo avvia
+    il thread effettua l'operazione di blocking_get/blocking_put a seconda del tipo di thread
 
 Alla fine del ciclo il buffer viene eliminato, liberata la memoria e il programma chiuso
+
+I casi di test sono i seguenti:
+1,0,1;
+0,1,1;
+1,1,1;
+2,0,1;
+0,2,1;
+2,0,2;
+4,0,4;
+5,0,5;
+0,2,2;
+2,2,1;
+2,2,2;
+
+I file di test sono 2 per verificare la situazione con thread bloccante e non e utilizzano entrambi gli stessi casi di test

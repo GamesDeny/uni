@@ -1,8 +1,0 @@
-Creare per ogni test-case producer/consumer semplificati (usa-e-getta con un solo valore)
-    non fanno parte del codice principale e non ha senso generalizzarli
-    alcuni sono
-        sospensione in attesa di un segnale di partenza
-        singola produzione/consumazione rispettivamente
-        segnalazione di terminazione e comunicazione del valore da get e put
-    il flusso che svolge il ruolo di driver dei test può decidere se creare altri flussi di questi tipi
-    il driver guida nel corpo dei test-case i flussi

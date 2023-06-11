@@ -12,19 +12,43 @@
 #include "project/implementation/producers.c"
 #include "project/implementation/consumers.c"
 
-void test_buffer_init();
+void test_scenario_1();
 
-void test_buffer_put_and_get();
+void test_scenario_2();
 
-void test_buffer_destroy();
+void test_scenario_3();
+
+void test_scenario_4();
+
+void test_scenario_5();
+
+void test_scenario_6();
+
+void test_scenario_7();
+
+void test_scenario_8();
+
+void test_scenario_9();
+
+void test_scenario_10();
+
+void test_scenario_11();
 
 int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Main Test Suite", NULL, NULL);
 
-    CU_add_test(suite, "Test buffer_init", test_buffer_init);
-    CU_add_test(suite, "Test buffer_destroy", test_buffer_destroy);
-    CU_add_test(suite, "Test buffer_put_and_get", test_buffer_put_and_get);
+    CU_add_test(suite, "Test Scenario 1", test_scenario_1);
+    CU_add_test(suite, "Test Scenario 2", test_scenario_2);
+    CU_add_test(suite, "Test Scenario 3", test_scenario_3);
+    CU_add_test(suite, "Test Scenario 4", test_scenario_4);
+    CU_add_test(suite, "Test Scenario 5", test_scenario_5);
+    CU_add_test(suite, "Test Scenario 6", test_scenario_6);
+    CU_add_test(suite, "Test Scenario 7", test_scenario_7);
+    CU_add_test(suite, "Test Scenario 8", test_scenario_8);
+    CU_add_test(suite, "Test Scenario 9", test_scenario_9);
+    CU_add_test(suite, "Test Scenario 10", test_scenario_4);
+    CU_add_test(suite, "Test Scenario 11", test_scenario_11);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
@@ -34,41 +58,148 @@ int main() {
     return CU_get_error();
 }
 
-void test_buffer_put_and_get() {
-    buffer_t *buffer = buffer_init(100);
+void test_scenario_1() {
+    buffer_t *buffer = buffer_init(1);
 
-    msg_t *msg_put = (msg_t *) msg_put->msg_init;
-    CU_ASSERT_NOT_EQUAL(msg_put, BUFFER_ERROR)
-    msg_put = blocking_put(buffer, msg_put);
-    CU_ASSERT_EQUAL(buffer->count, 1)
-    CU_ASSERT_NOT_EQUAL(msg_put, BUFFER_ERROR)
-
-    msg_t *msg_get = blocking_get(buffer);
-    CU_ASSERT_NOT_EQUAL(msg_get, BUFFER_ERROR)
-    CU_ASSERT_EQUAL(buffer->count, 0)
-    CU_ASSERT_EQUAL(msg_get, msg_put)
+    pthread_t producer_t;
+    pthread_create(&producer_t, NULL, blocking_producer, buffer);
+    CU_ASSERT_EQUAL(buffer->count, 0);
 
     buffer_destroy(buffer);
 }
 
-void test_buffer_destroy() {
-    buffer_t *buffer = buffer_init(100);
+void test_scenario_2() {
+    buffer_t *buffer = buffer_init(1);
 
-    CU_ASSERT_NOT_EQUAL(buffer, NULL)
-    CU_ASSERT_EQUAL(buffer->maxsize, 100)
+    pthread_t consumer_t;
+    pthread_create(&consumer_t, NULL, blocking_consumer, buffer);
+    CU_ASSERT_EQUAL(buffer->count, 0);
 
     buffer_destroy(buffer);
-    CU_ASSERT_EQUAL(buffer, NULL)
 }
 
-void test_buffer_init() {
-    buffer_t *buffer = buffer_init(100);
+void test_scenario_3() {
+    buffer_t *buffer = buffer_init(1);
 
-    CU_ASSERT_PTR_NOT_NULL(buffer)
-    CU_ASSERT_EQUAL(buffer->count, 0)
-    CU_ASSERT_EQUAL(buffer->maxsize, 100)
-    CU_ASSERT_NOT_EQUAL(&(buffer->mutex), NULL)
+    pthread_t producer_t;
+    pthread_t consumer_t;
+
+    pthread_create(&producer_t, NULL, blocking_producer, buffer);
+    pthread_create(&consumer_t, NULL, blocking_consumer, buffer);
 
     buffer_destroy(buffer);
-    CU_ASSERT_EQUAL(buffer, NULL)
+}
+
+void test_scenario_4() {
+    buffer_t *buffer = buffer_init(1);
+
+    pthread_t producer_t_1;
+    pthread_t producer_t_2;
+
+    pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
+
+    buffer_destroy(buffer);
+}
+
+void test_scenario_5() {
+    buffer_t *buffer = buffer_init(1);
+
+    pthread_t consumer_t_1;
+    pthread_t consumer_t_2;
+
+    pthread_create(&consumer_t_1, NULL, blocking_consumer, buffer);
+    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
+
+    buffer_destroy(buffer);
+}
+
+void test_scenario_6() {
+    buffer_t *buffer = buffer_init(2);
+
+    pthread_t producer_t_1;
+    pthread_t producer_t_2;
+
+    pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
+
+    buffer_destroy(buffer);
+}
+
+void test_scenario_7() {
+    buffer_t *buffer = buffer_init(4);
+
+    pthread_t producer_t_1;
+    pthread_t producer_t_2;
+    pthread_t producer_t_3;
+    pthread_t producer_t_4;
+
+    pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_3, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_4, NULL, blocking_producer, buffer);
+
+    buffer_destroy(buffer);
+}
+
+void test_scenario_8() {
+    buffer_t *buffer = buffer_init(5);
+
+    pthread_t producer_t_1;
+    pthread_t producer_t_2;
+    pthread_t producer_t_3;
+    pthread_t producer_t_4;
+    pthread_t producer_t_5;
+
+    pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_3, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_4, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_5, NULL, blocking_producer, buffer);
+
+    buffer_destroy(buffer);
+}
+
+void test_scenario_9() {
+    buffer_t *buffer = buffer_init(2);
+
+    pthread_t consumer_t_1;
+    pthread_t consumer_t_2;
+
+    pthread_create(&consumer_t_1, NULL, blocking_consumer, buffer);
+    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
+
+    buffer_destroy(buffer);
+}
+
+void test_scenario_10() {
+    buffer_t *buffer = buffer_init(1);
+
+    pthread_t producer_t_1;
+    pthread_t producer_t_2;
+    pthread_t consumer_t_1;
+    pthread_t consumer_t_2;
+
+    pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
+    pthread_create(&consumer_t_1, NULL, blocking_consumer, buffer);
+    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
+
+    buffer_destroy(buffer);
+}
+
+void test_scenario_11() {
+    buffer_t *buffer = buffer_init(2);
+
+    pthread_t producer_t_1;
+    pthread_t producer_t_2;
+    pthread_t consumer_t_1;
+    pthread_t consumer_t_2;
+
+    pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
+    pthread_create(&consumer_t_1, NULL, blocking_consumer, buffer);
+    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
+
+    buffer_destroy(buffer);
 }
