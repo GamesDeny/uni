@@ -13,7 +13,7 @@ void *blocking_consumer(void *arg) {
     check(msg != NULL && msg != BUFFER_ERROR, "blocking_consumer() - msg null\n");
 
     msg_destroy(msg);
-    printf("Consumed: %lu\n", buffer->count);
+    printf("Consumed: %lu\n", buffer->count+1);
     printf("blocking_consumer() - buffer_count: %lu\n", buffer->count);
 
     pthread_exit(NULL);
