@@ -13,10 +13,8 @@
 
 typedef struct {
     msg_t **messages;
-    atomic_ulong get_index;
-    atomic_ulong put_index;
-    atomic_ulong count;
-    unsigned int maxsize;
+    atomic_long count;
+    unsigned long maxsize;
     pthread_mutex_t mutex;
     pthread_cond_t full;
     pthread_cond_t empty;
@@ -27,7 +25,7 @@ typedef struct {
  * Allocazione / deallocazione buffer
  * creazione di un buffer vuoto di dim. max nota
  */
-buffer_t *buffer_init(unsigned int maxsize);
+buffer_t *buffer_init(unsigned long maxsize);
 
 /*
 * deallocazione di un buffer

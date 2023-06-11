@@ -5,11 +5,11 @@
 #include "headers/buffer_t.h"
 
 #include "implementation/utils.c"
-#include "implementation/consumers.c"
-#include "implementation/producers.c"
-#include "implementation/test_case.c"
 #include "implementation/buffer_t.c"
 #include "implementation/msg_t.c"
+#include "implementation/test_case.c"
+#include "implementation/consumers.c"
+#include "implementation/producers.c"
 
 #define DEFAULT_BUFFER_SIZE 10
 #define DEFAULT_NO_CONSUMERS 100
@@ -26,7 +26,9 @@ int running_main(int argc, char **argv);
 int main_with_args(int argc, char **argv);
 
 int main() {
-    int test = 1;
+    int test = 0;
+    blocking = 0;
+
     if (test) {
         main_with_args(1, (char **) NULL);
     } else {
@@ -58,7 +60,6 @@ int main_with_args(int argc, char **argv) {
         }
     }
     prepare_argv(cases, test_argv);
-    blocking = 1;
 
     // Calling parameterized main_with_args
     // blocking_val:
@@ -68,14 +69,11 @@ int main_with_args(int argc, char **argv) {
         running_main(argc, argv);
     }
 
-    free_allocated_memory(4, test_argv, cases);
+    free_allocated_memory(argc, test_argv, cases);
     return 1;
 }
 
 int running_main(int argc, char **argv) {
-    buffer_t *buffer = buffer_init(buffer_size);
-    check(buffer != NULL, "main() - Error buffer null found\n");
-
     if (argc > 1 && argv[1] != NULL && argv[2] != NULL && argv[3] != NULL) {
         no_of_consumers = strtoul(argv[1], NULL, 10);
         no_of_producers = strtoul(argv[2], NULL, 10);
@@ -85,6 +83,9 @@ int running_main(int argc, char **argv) {
         no_of_producers = DEFAULT_NO_PRODUCERS;
         buffer_size = DEFAULT_BUFFER_SIZE;
     }
+
+    buffer_t *buffer = buffer_init(buffer_size);
+    check(buffer != NULL, "main() - Error buffer null found\n");
 
     for (unsigned long cons = 0, prod = 0; cons < no_of_consumers && prod < no_of_producers; cons++, prod++) {
         printf("main() - step cons %lu, step prod %lu\n", cons, prod);
@@ -99,8 +100,6 @@ int running_main(int argc, char **argv) {
             pthread_create(&producer_t, NULL, non_blocking_producer, buffer);
             pthread_create(&consumer_t, NULL, non_blocking_consumer, buffer);
         }
-
-        printf("main() - buffer_count: %lu\n", buffer->count);
     }
 
     buffer_destroy(buffer);
@@ -108,8 +107,11 @@ int running_main(int argc, char **argv) {
 }
 
 void free_allocated_memory(int argc, char ***argv, test_case **cases) {
-    for (int i = 0, j = 0; i < argc && j < sizeof argv; i++, j++) {
-        free(argv[j][i]);
+    for (int i = 0; i < sizeof argv; i++) {
+        for (int j = 0; j < argc; j++) {
+            free(argv[i][j]);
+        }
+        free(argv[i]);
     }
     free(argv);
 

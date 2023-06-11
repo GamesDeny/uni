@@ -11,10 +11,11 @@ void *blocking_producer(void *arg) {
 
     void *content = malloc(sizeof(char *));
     snprintf(content, sizeof(content), "%d", rand());
-    msg_t *message = msg_init(content);
+    msg_t *msg = msg_init(content);
 
-    blocking_put(buffer, message);
-    printf("Produced: %s\n", message->content);
+    msg = blocking_put(buffer, msg);
+    printf("Produced: %s\n", msg->content);
+    printf("main() - buffer_count: %lu\n", buffer->count);
 
     pthread_exit(NULL);
 }
@@ -24,10 +25,14 @@ void *non_blocking_producer(void *arg) {
 
     void *content = malloc(sizeof(char *));
     snprintf(content, sizeof(content), "%d", rand());
-    msg_t *message = msg_init(content);
+    msg_t *msg = msg_init(content);
+    check(msg != NULL && msg != BUFFER_ERROR, "non_blocking_producer() - NULL msg created\n");
 
-    non_blocking_put(buffer, message);
-    printf("Produced: %s\n", message->content);
+    msg = non_blocking_put(buffer, msg);
+    check(msg != NULL && msg != BUFFER_ERROR, "non_blocking_producer() - NULL msg put\n");
 
-    pthread_exit(NULL);
+    printf("Produced: %s\n", msg->content);
+    printf("main() - buffer_count: %lu\n", buffer->count);
+
+    //pthread_exit(NULL);
 }

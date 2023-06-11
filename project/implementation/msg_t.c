@@ -10,11 +10,15 @@
 
 /**/
 msg_t *msg_init(void *content) {
-    check(content != NULL, "msg_init() - Null content found...\n");
+    check(content != NULL, "msg_init() - Null content found\n");
 
+    //viene creata una copia "privata" della stringa
     msg_t *new_msg = (msg_t *) malloc(sizeof(msg_t));
     char *string = (char *) content;
+    check(string != NULL, "msg_init() - NULL content found into string\n");
+
     char *new_content = (char *) malloc(strlen(string) + 1); // +1 per \0 finale
+    check(new_content != NULL, "msg_init() - NULL content found into string\n");
     strcpy(new_content, string);
 
     new_msg->content = new_content;
@@ -26,17 +30,16 @@ msg_t *msg_init(void *content) {
 }
 
 void msg_destroy(msg_t *msg) {
-    if (msg != NULL) {
-        free(msg);
+    if (msg != NULL && msg != BUFFER_ERROR) {
+        if (msg->content != NULL) {
+            free(msg->content); // free copia privata
+        }
+        free(msg);          // free struct
     }
 }
 
 msg_t *msg_copy(msg_t *msg) {
-    check(msg != NULL, "msg_copy() - Null msg found...\n");
+    check(msg != NULL && msg != BUFFER_ERROR, "msg_copy() - Null msg found\n");
 
-    msg_t *new_msg = (msg_t *) malloc(sizeof(msg_t));
-
-    new_msg->content = msg->content;
-
-    return new_msg;
+    return (msg_t *) msg->msg_init(msg->content);
 }

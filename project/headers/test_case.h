@@ -12,9 +12,9 @@
 #define NO_OF_COLUMNS 3
 
 typedef struct {
-    int no_consumers;
-    int no_producers;
-    int buffer_size;
+    long no_consumers;
+    long no_producers;
+    long buffer_size;
 } test_case;
 
 void prepare_argv(test_case **cases, char ***argv_matrix);
