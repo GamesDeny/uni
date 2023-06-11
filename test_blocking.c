@@ -38,17 +38,17 @@ int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Main Test Suite", NULL, NULL);
 
-    CU_add_test(suite, "Test Scenario 1", test_scenario_1);
-    CU_add_test(suite, "Test Scenario 2", test_scenario_2);
-    CU_add_test(suite, "Test Scenario 3", test_scenario_3);
-    CU_add_test(suite, "Test Scenario 4", test_scenario_4);
-    CU_add_test(suite, "Test Scenario 5", test_scenario_5);
-    CU_add_test(suite, "Test Scenario 6", test_scenario_6);
-    CU_add_test(suite, "Test Scenario 7", test_scenario_7);
-    CU_add_test(suite, "Test Scenario 8", test_scenario_8);
-    CU_add_test(suite, "Test Scenario 9", test_scenario_9);
-    CU_add_test(suite, "Test Scenario 10", test_scenario_4);
-    CU_add_test(suite, "Test Scenario 11", test_scenario_11);
+    CU_add_test(suite, "Test Scenario 1=P:1, C:0, N:1", test_scenario_1);
+    CU_add_test(suite, "Test Scenario 2=P:0, C:1, N:1", test_scenario_2);
+    CU_add_test(suite, "Test Scenario 3=P:1, C:1, N:1", test_scenario_3);
+    CU_add_test(suite, "Test Scenario 4=P:2, C:0, N:1", test_scenario_4);
+    CU_add_test(suite, "Test Scenario 5=P:0, C:2, N:1", test_scenario_5);
+    CU_add_test(suite, "Test Scenario 6=P:2, C:0, N:2", test_scenario_6);
+    CU_add_test(suite, "Test Scenario 7=P:4, C:0, N:4", test_scenario_7);
+    CU_add_test(suite, "Test Scenario 8=P:5, C:0, N:5", test_scenario_8);
+    CU_add_test(suite, "Test Scenario 9=P:0, C:2, N:2", test_scenario_9);
+    CU_add_test(suite, "Test Scenario 10=P:2, C:2, N:1", test_scenario_4);
+    CU_add_test(suite, "Test Scenario 11=P:2, C:2, N:2", test_scenario_11);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
