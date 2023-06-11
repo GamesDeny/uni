@@ -63,16 +63,23 @@ void test_scenario_1() {
 
     pthread_t producer_t;
     pthread_create(&producer_t, NULL, non_blocking_producer, buffer);
-    CU_ASSERT_EQUAL(buffer->count, 0);
+
+    pthread_join(producer_t, NULL);
+    CU_ASSERT_EQUAL(buffer->count, 1);
 
     buffer_destroy(buffer);
 }
 
 void test_scenario_2() {
     buffer_t *buffer = buffer_init(1);
+    generate_put_msg(buffer,)
+    buffer->messages[buffer->count] = msg_init("val");
+    CU_ASSERT_EQUAL(buffer->count, 1);
 
     pthread_t consumer_t;
     pthread_create(&consumer_t, NULL, non_blocking_consumer, buffer);
+
+    pthread_join(consumer_t, NULL);
     CU_ASSERT_EQUAL(buffer->count, 0);
 
     buffer_destroy(buffer);

@@ -32,14 +32,15 @@ msg_t *msg_init(void *content) {
 void msg_destroy(msg_t *msg) {
     if (msg != BUFFER_ERROR) {
         if (msg->content != NULL) {
-            free(msg->content); // free copia privata
+            free(msg->content);
+            msg->content = NULL;
         }
-        free(msg);          // free struct
+        free(msg);
+        msg = NULL;
     }
 }
 
 msg_t *msg_copy(msg_t *msg) {
     check(msg != BUFFER_ERROR, "msg_copy() - Null msg found\n");
-
     return (msg_t *) msg->msg_init(msg->content);
 }

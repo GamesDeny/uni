@@ -14,9 +14,11 @@ void *blocking_producer(void *arg) {
     msg_t *msg = msg_init(content);
 
     msg = blocking_put(buffer, msg);
-    printf("Produced: %s\n", msg->content);
-    printf("blocking_producer() - buffer_count: %lu\n", buffer->count);
+    if (msg != BUFFER_ERROR && msg->content != NULL) {
+        printf("Produced: %s\n", msg->content);
+    }
 
+    printf("blocking_producer() - buffer_count: %lu\n", buffer->count);
     pthread_exit(NULL);
 }
 

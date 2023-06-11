@@ -29,15 +29,13 @@ void buffer_destroy(buffer_t *buffer) {
     if (buffer->messages != NULL) {
         for (int i = 0; i < buffer->maxsize && buffer->messages[i] != BUFFER_ERROR; i++) {
             //printf("buffer_destroy() - Messages is not empty so freeing msg: %d\n", i);
-            free(buffer->messages[i]);
-            buffer->messages[i] = NULL;
+            msg_destroy(buffer->messages[i]);
         }
         free(buffer->messages);
         buffer->messages = NULL;
     }
 
     pthread_mutex_destroy(&(buffer->mutex));
-
     pthread_cond_destroy(&(buffer->full));
     pthread_cond_destroy(&(buffer->empty));
 
@@ -53,7 +51,6 @@ msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
     while (buffer->count == buffer->maxsize) {
         pthread_cond_wait(&(buffer->full), &(buffer->mutex));
     }
-
 
     return generate_put_msg(buffer, msg);
 }
