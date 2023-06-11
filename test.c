@@ -23,8 +23,8 @@ int main() {
     CU_pSuite suite = CU_add_suite("Main Test Suite", NULL, NULL);
 
     CU_add_test(suite, "Test buffer_init", test_buffer_init);
-    CU_add_test(suite, "Test buffer_put_and_get", test_buffer_put_and_get);
     CU_add_test(suite, "Test buffer_destroy", test_buffer_destroy);
+    CU_add_test(suite, "Test buffer_put_and_get", test_buffer_put_and_get);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
@@ -38,10 +38,13 @@ void test_buffer_put_and_get() {
     buffer_t *buffer = buffer_init(100);
 
     msg_t *msg_put = (msg_t *) msg_put->msg_init;
-    blocking_put(buffer, msg_put);
+    CU_ASSERT_NOT_EQUAL(msg_put, BUFFER_ERROR)
+    msg_put = blocking_put(buffer, msg_put);
     CU_ASSERT_EQUAL(buffer->count, 1)
+    CU_ASSERT_NOT_EQUAL(msg_put, BUFFER_ERROR)
 
     msg_t *msg_get = blocking_get(buffer);
+    CU_ASSERT_NOT_EQUAL(msg_get, BUFFER_ERROR)
     CU_ASSERT_EQUAL(buffer->count, 0)
     CU_ASSERT_EQUAL(msg_get, msg_put)
 
@@ -62,9 +65,10 @@ void test_buffer_init() {
     buffer_t *buffer = buffer_init(100);
 
     CU_ASSERT_PTR_NOT_NULL(buffer)
+    CU_ASSERT_EQUAL(buffer->count, 0)
     CU_ASSERT_EQUAL(buffer->maxsize, 100)
-    CU_ASSERT_EQUAL(atomic_load(&buffer->count), 0)
     CU_ASSERT_NOT_EQUAL(&(buffer->mutex), NULL)
 
     buffer_destroy(buffer);
+    CU_ASSERT_EQUAL(buffer, NULL)
 }

@@ -9,7 +9,7 @@ buffer_t *buffer_init(unsigned long maxsize) {
     buffer_t *buffer = (buffer_t *) malloc(sizeof(buffer_t));
 
     buffer->messages = malloc(sizeof(msg_t *) * buffer->maxsize);
-    atomic_store(&buffer->count, 0);
+    buffer->count = 0;
     buffer->maxsize = maxsize;
 
     pthread_mutex_init(&(buffer->mutex), NULL);
@@ -22,11 +22,13 @@ buffer_t *buffer_init(unsigned long maxsize) {
 void buffer_destroy(buffer_t *buffer) {
     check(buffer != NULL, "buffer_destroy() - Null buffer found\n");
 
-    for (int i = 0; i < buffer->count; i++) {
-        printf("buffer_destroy() - Messages is not empty so freeing msg: %d\n", i);
+    for (int i = 0; i < buffer->maxsize; i++) {
+        //printf("buffer_destroy() - Messages is not empty so freeing msg: %d\n", i);
         free(buffer->messages[i]);
+        buffer->messages[i] = NULL;
     }
     free(buffer->messages);
+    buffer->messages = NULL;
 
     pthread_mutex_destroy(&(buffer->mutex));
 
@@ -34,6 +36,7 @@ void buffer_destroy(buffer_t *buffer) {
     pthread_cond_destroy(&(buffer->empty));
 
     free(buffer);
+    buffer = NULL;
 }
 
 msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
