@@ -24,7 +24,7 @@ buffer_t *buffer_init(unsigned long maxsize) {
 }
 
 void buffer_destroy(buffer_t *buffer) {
-    check(buffer != NULL, "buffer_destroy() - Null buffer found\n");
+    check(buffer != NULL, "buffer_destroy() - NULL buffer found\n");
 
     if (buffer->messages != NULL) {
         for (int i = 0; i < buffer->maxsize && buffer->messages[i] != BUFFER_ERROR; i++) {
@@ -44,8 +44,8 @@ void buffer_destroy(buffer_t *buffer) {
 }
 
 msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
-    check(buffer != NULL, "blocking_put() - Null buffer found\n");
-    check(msg != BUFFER_ERROR, "blocking_put() - Null msg found\n");
+    check(buffer != NULL, "blocking_put() - NULL buffer found\n");
+    check(msg != BUFFER_ERROR, "blocking_put() - NULL msg found\n");
 
     pthread_mutex_lock(&(buffer->mutex));
     while (buffer->count == buffer->maxsize) {
@@ -56,8 +56,8 @@ msg_t *blocking_put(buffer_t *buffer, msg_t *msg) {
 }
 
 msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
-    check(buffer != NULL, "non_blocking_put() - Null buffer found\n");
-    check(msg != BUFFER_ERROR, "non_blocking_put() - Null msg found\n");
+    check(buffer != NULL, "non_blocking_put() - NULL buffer found\n");
+    check(msg != BUFFER_ERROR, "non_blocking_put() - NULL msg found\n");
 
     pthread_mutex_lock(&(buffer->mutex));
     if (buffer->count == buffer->maxsize) {
@@ -69,7 +69,8 @@ msg_t *non_blocking_put(buffer_t *buffer, msg_t *msg) {
 }
 
 msg_t *blocking_get(buffer_t *buffer) {
-    check(buffer != NULL, "blocking_get() - Null buffer found\n");
+    check(buffer != NULL, "blocking_get() - NULL buffer found\n");
+    check(buffer->messages != NULL, "blocking_get() - NULL buffer messages found\n");
 
     pthread_mutex_lock(&(buffer->mutex));
     while (buffer->count == 0) {
@@ -86,7 +87,7 @@ msg_t *blocking_get(buffer_t *buffer) {
 }
 
 msg_t *non_blocking_get(buffer_t *buffer) {
-    check(buffer != NULL, "non_blocking_get() - Null buffer found\n");
+    check(buffer != NULL, "non_blocking_get() - NULL buffer found\n");
 
     long buffer_index = buffer->count - 1;
     pthread_mutex_lock(&(buffer->mutex));

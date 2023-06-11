@@ -12,9 +12,16 @@ void *blocking_consumer(void *arg) {
     msg_t *msg = blocking_get(buffer);
     check(msg != BUFFER_ERROR, "blocking_consumer() - msg null\n");
 
-    msg_destroy(msg);
-    printf("Consumed: %lu\n", buffer->count+1);
-    printf("blocking_consumer() - buffer_count: %lu\n", buffer->count);
+    if (msg != BUFFER_ERROR) {
+        if (msg->content != NULL) {
+            printf("blocking_consumer() - Consumed: %s\n", msg->content);
+        } else {
+            printf("blocking_consumer() - NULL content pointer\n");
+        }
+        msg_destroy(msg);
+    } else {
+        printf("blocking_consumer() - NULL msg pointer\n");
+    }
 
     pthread_exit(NULL);
 }
@@ -38,5 +45,5 @@ void *non_blocking_consumer(void *arg) {
 
     printf("non_blocking_consumer() - buffer_count: %lu\n", buffer->count);
 
-//    pthread_exit(NULL);
+    pthread_exit(NULL);
 }

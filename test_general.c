@@ -38,12 +38,12 @@ void test_buffer_put_and_get() {
     buffer_t *buffer = buffer_init(100);
 
     pthread_t producer_t;
-    pthread_create(&producer_t, NULL, non_blocking_producer, buffer);
+    pthread_create(&producer_t, NULL, blocking_producer, buffer);
     pthread_join(producer_t, NULL);
     CU_ASSERT_EQUAL(buffer->count, 1)
 
     pthread_t consumer_t;
-    pthread_create(&consumer_t, NULL, non_blocking_consumer, buffer);
+    pthread_create(&consumer_t, NULL, blocking_consumer, buffer);
     pthread_join(consumer_t, NULL);
     CU_ASSERT_EQUAL(buffer->count, 0)
 

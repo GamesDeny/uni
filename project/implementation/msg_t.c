@@ -10,7 +10,7 @@
 
 /**/
 msg_t *msg_init(void *content) {
-    check(content != NULL, "msg_init() - Null content found\n");
+    check(content != NULL, "msg_init() - NULL content found\n");
 
     //viene creata una copia "privata" della stringa
     msg_t *new_msg = (msg_t *) malloc(sizeof(msg_t));
@@ -41,6 +41,6 @@ void msg_destroy(msg_t *msg) {
 }
 
 msg_t *msg_copy(msg_t *msg) {
-    check(msg != BUFFER_ERROR, "msg_copy() - Null msg found\n");
+    check(msg != BUFFER_ERROR, "msg_copy() - NULL msg found\n");
     return (msg_t *) msg->msg_init(msg->content);
 }
