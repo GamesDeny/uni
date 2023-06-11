@@ -37,16 +37,15 @@ int main() {
 void test_buffer_put_and_get() {
     buffer_t *buffer = buffer_init(100);
 
-    msg_t *msg_put = (msg_t *) msg_put->msg_init;
-    CU_ASSERT_NOT_EQUAL(msg_put, BUFFER_ERROR)
-    msg_put = blocking_put(buffer, msg_put);
+    pthread_t producer_t;
+    pthread_create(&producer_t, NULL, non_blocking_producer, buffer);
+    pthread_join(producer_t, NULL);
     CU_ASSERT_EQUAL(buffer->count, 1)
-    CU_ASSERT_NOT_EQUAL(msg_put, BUFFER_ERROR)
 
-    msg_t *msg_get = blocking_get(buffer);
-    CU_ASSERT_NOT_EQUAL(msg_get, BUFFER_ERROR)
+    pthread_t consumer_t;
+    pthread_create(&consumer_t, NULL, non_blocking_consumer, buffer);
+    pthread_join(consumer_t, NULL);
     CU_ASSERT_EQUAL(buffer->count, 0)
-    CU_ASSERT_EQUAL(msg_get, msg_put)
 
     buffer_destroy(buffer);
 }
@@ -70,5 +69,4 @@ void test_buffer_init() {
     CU_ASSERT_NOT_EQUAL(&(buffer->mutex), NULL)
 
     buffer_destroy(buffer);
-    CU_ASSERT_EQUAL(buffer, NULL)
 }
