@@ -5,24 +5,24 @@
 #include "common_main.c"
 
 int main() {
-    int test = 0;
+    for (int test = 0; test < 2; test++) {
+        if (test) {
+            main_with_args(1, (char **) NULL);
+        } else {
+            char **argv = (char **) malloc((4) * sizeof(char *));
+            argv[0] = strdup(CSV_PATH);
 
-    if (test) {
-        main_with_args(1, (char **) NULL);
-    } else {
-        char **argv = (char **) malloc((4) * sizeof(char *));
-        argv[0] = strdup(CSV_PATH);
+            argv[1] = (char *) malloc(20 * sizeof(char));
+            sprintf(argv[1], "%d", 100);
 
-        argv[1] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[1], "%d", 100);
+            argv[2] = (char *) malloc(20 * sizeof(char));
+            sprintf(argv[2], "%d", 100);
 
-        argv[2] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[2], "%d", 100);
+            argv[3] = (char *) malloc(20 * sizeof(char));
+            sprintf(argv[3], "%d", 10);
 
-        argv[3] = (char *) malloc(20 * sizeof(char));
-        sprintf(argv[3], "%d", 10);
-
-        running_main(4, (char **) argv);
+            running_main(4, (char **) argv);
+        }
     }
 }
 
