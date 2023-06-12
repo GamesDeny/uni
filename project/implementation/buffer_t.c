@@ -28,7 +28,6 @@ void buffer_destroy(buffer_t *buffer) {
 
     if (buffer->messages != NULL) {
         for (int i = 0; i < buffer->maxsize && buffer->messages[i] != BUFFER_ERROR; i++) {
-            //printf("buffer_destroy() - Messages is not empty so freeing msg: %d\n", i);
             msg_destroy(buffer->messages[i]);
         }
         free(buffer->messages);
@@ -112,7 +111,8 @@ msg_t *generate_get_msg(buffer_t *buffer, long buffer_index) {
 }
 
 msg_t *generate_put_msg(buffer_t *buffer, const msg_t *msg) {
-    buffer->messages[buffer->count] = (msg_t *) msg->msg_copy((struct msg_t *) msg);
+    msg_t *msg_copy = (msg_t *) msg->msg_copy((struct msg_t *) msg);
+    buffer->messages[buffer->count] = msg_copy;
     buffer->count = atomic_fetch_add(&buffer->count, 1) % buffer->maxsize;
     printf("put() - Buffer count: %lu\n", buffer->count);
 
@@ -120,5 +120,5 @@ msg_t *generate_put_msg(buffer_t *buffer, const msg_t *msg) {
     pthread_mutex_unlock(&(buffer->mutex));
     check(msg != BUFFER_ERROR, "put() - Returning NULL msg\n");
 
-    return msg;
+    return msg_copy;
 }

@@ -12,6 +12,8 @@
 #include "project/implementation/producers.c"
 #include "project/implementation/consumers.c"
 
+void add_message_to_buffer(buffer_t *buffer, int n);
+
 void test_scenario_1();
 
 void test_scenario_2();
@@ -63,26 +65,25 @@ void test_scenario_1() {
 
     pthread_t producer_t;
     pthread_create(&producer_t, NULL, blocking_producer, buffer);
-
     pthread_join(producer_t, NULL);
-    CU_ASSERT_EQUAL(buffer->count, 1);
+
+    CU_ASSERT_EQUAL(buffer->count, 1)
 
     buffer_destroy(buffer);
 }
 
 void test_scenario_2() {
     buffer_t *buffer = buffer_init(1);
-    CU_ASSERT_EQUAL(buffer->count, 0)
 
-    buffer->messages[buffer->count] = msg_init("val");
-    buffer->count++;
-    CU_ASSERT_EQUAL(buffer->count, 1);
+    add_message_to_buffer(buffer, 1);
+    CU_ASSERT_EQUAL(buffer->count, 1)
+    CU_ASSERT_EQUAL(sizeof buffer->messages, 1)
 
     pthread_t consumer_t;
     pthread_create(&consumer_t, NULL, blocking_consumer, buffer);
-
     pthread_join(consumer_t, NULL);
-    CU_ASSERT_EQUAL(buffer->count, 0);
+
+    CU_ASSERT_EQUAL(buffer->count, 0)
 
     buffer_destroy(buffer);
 }
@@ -94,10 +95,11 @@ void test_scenario_3() {
     pthread_t consumer_t;
 
     pthread_create(&producer_t, NULL, blocking_producer, buffer);
-    pthread_create(&consumer_t, NULL, blocking_consumer, buffer);
-
-    pthread_join(consumer_t, NULL);
     pthread_join(producer_t, NULL);
+    pthread_create(&consumer_t, NULL, blocking_consumer, buffer);
+    pthread_join(consumer_t, NULL);
+
+    CU_ASSERT_EQUAL(buffer->count, 0)
 
     buffer_destroy(buffer);
 }
@@ -109,25 +111,30 @@ void test_scenario_4() {
     pthread_t producer_t_2;
 
     pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
-    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
-
     pthread_join(producer_t_1, NULL);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
     pthread_join(producer_t_2, NULL);
+
+    CU_ASSERT_EQUAL(buffer->count, 2)
 
     buffer_destroy(buffer);
 }
 
 void test_scenario_5() {
     buffer_t *buffer = buffer_init(1);
+    add_message_to_buffer(buffer, 2);
+    CU_ASSERT_EQUAL(buffer->count, 2)
+    CU_ASSERT_EQUAL(sizeof buffer->messages, 2)
 
     pthread_t consumer_t_1;
     pthread_t consumer_t_2;
 
     pthread_create(&consumer_t_1, NULL, blocking_consumer, buffer);
-    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
-
     pthread_join(consumer_t_1, NULL);
+    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
     pthread_join(consumer_t_2, NULL);
+
+    CU_ASSERT_EQUAL(buffer->count, 0)
 
     buffer_destroy(buffer);
 }
@@ -139,10 +146,11 @@ void test_scenario_6() {
     pthread_t producer_t_2;
 
     pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
-    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
-
     pthread_join(producer_t_1, NULL);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
     pthread_join(producer_t_2, NULL);
+
+    CU_ASSERT_EQUAL(buffer->count, 2)
 
     buffer_destroy(buffer);
 }
@@ -156,14 +164,15 @@ void test_scenario_7() {
     pthread_t producer_t_4;
 
     pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
-    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
-    pthread_create(&producer_t_3, NULL, blocking_producer, buffer);
-    pthread_create(&producer_t_4, NULL, blocking_producer, buffer);
-
     pthread_join(producer_t_1, NULL);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
     pthread_join(producer_t_2, NULL);
+    pthread_create(&producer_t_3, NULL, blocking_producer, buffer);
     pthread_join(producer_t_3, NULL);
+    pthread_create(&producer_t_4, NULL, blocking_producer, buffer);
     pthread_join(producer_t_4, NULL);
+
+    CU_ASSERT_EQUAL(buffer->count, 4)
 
     buffer_destroy(buffer);
 }
@@ -178,31 +187,36 @@ void test_scenario_8() {
     pthread_t producer_t_5;
 
     pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
-    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
-    pthread_create(&producer_t_3, NULL, blocking_producer, buffer);
-    pthread_create(&producer_t_4, NULL, blocking_producer, buffer);
-    pthread_create(&producer_t_5, NULL, blocking_producer, buffer);
-
     pthread_join(producer_t_1, NULL);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
     pthread_join(producer_t_2, NULL);
+    pthread_create(&producer_t_3, NULL, blocking_producer, buffer);
     pthread_join(producer_t_3, NULL);
+    pthread_create(&producer_t_4, NULL, blocking_producer, buffer);
     pthread_join(producer_t_4, NULL);
+    pthread_create(&producer_t_5, NULL, blocking_producer, buffer);
     pthread_join(producer_t_5, NULL);
+
+    CU_ASSERT_EQUAL(buffer->count, 5)
 
     buffer_destroy(buffer);
 }
 
 void test_scenario_9() {
     buffer_t *buffer = buffer_init(2);
+    add_message_to_buffer(buffer, 2);
+    CU_ASSERT_EQUAL(buffer->count, 2)
+    CU_ASSERT_EQUAL(sizeof buffer->messages, 2)
 
     pthread_t consumer_t_1;
     pthread_t consumer_t_2;
 
     pthread_create(&consumer_t_1, NULL, blocking_consumer, buffer);
-    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
-
     pthread_join(consumer_t_1, NULL);
+    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
     pthread_join(consumer_t_2, NULL);
+
+    CU_ASSERT_EQUAL(buffer->count, 0)
 
     buffer_destroy(buffer);
 }
@@ -216,14 +230,15 @@ void test_scenario_10() {
     pthread_t consumer_t_2;
 
     pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
-    pthread_create(&consumer_t_1, NULL, blocking_consumer, buffer);
-    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
-    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
-
     pthread_join(producer_t_1, NULL);
+    pthread_create(&consumer_t_1, NULL, blocking_consumer, buffer);
     pthread_join(consumer_t_1, NULL);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
     pthread_join(producer_t_2, NULL);
+    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
     pthread_join(consumer_t_2, NULL);
+
+    CU_ASSERT_EQUAL(buffer->count, 0)
 
     buffer_destroy(buffer);
 }
@@ -237,14 +252,25 @@ void test_scenario_11() {
     pthread_t consumer_t_2;
 
     pthread_create(&producer_t_1, NULL, blocking_producer, buffer);
-    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
-    pthread_create(&consumer_t_1, NULL, blocking_consumer, buffer);
-    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
-
     pthread_join(producer_t_1, NULL);
-    pthread_join(consumer_t_1, NULL);
+    pthread_create(&producer_t_2, NULL, blocking_producer, buffer);
     pthread_join(producer_t_2, NULL);
+    pthread_create(&consumer_t_1, NULL, blocking_consumer, buffer);
+    pthread_join(consumer_t_1, NULL);
+    pthread_create(&consumer_t_2, NULL, blocking_consumer, buffer);
     pthread_join(consumer_t_2, NULL);
 
+    CU_ASSERT_EQUAL(buffer->count, 0)
+
     buffer_destroy(buffer);
+}
+
+void add_message_to_buffer(buffer_t *buffer, int n) {
+    for (int i = 0; i < n; i++) {
+        void *content = malloc(sizeof(char *));
+        snprintf(content, sizeof(content), "val %d", i);
+
+        buffer->messages[buffer->count] = msg_init(content);
+        buffer->count++;
+    }
 }
